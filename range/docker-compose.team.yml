@@ -1,0 +1,77 @@
+# Per-team vulnerable service stack for the A/D range.
+# Launched once per team with a distinct project name and ${TEAM} alias:
+#   TEAM=team1 docker compose -p team1 -f docker-compose.team.yml up -d --build
+# The gateway joins the shared external network `adrange` under the alias ${TEAM},
+# so ForcAD checkers reach the team at team1:5000 (bouquets) and team1:8083 (otkritki).
+
+networks:
+  internal:
+  adrange:
+    external: true
+
+volumes:
+  bouquets_data:
+  mysql_data:
+
+services:
+  bouquets:
+    build: ../blitz-ad/services/bouquets
+    restart: unless-stopped
+    pids_limit: 256
+    mem_limit: 512M
+    cpus: 0.5
+    networks: [internal]
+    environment:
+      - DB=/data/bouquets.db
+      - SECRET=/data/secret
+    volumes:
+      - bouquets_data:/data
+
+  db:
+    image: mysql
+    restart: unless-stopped
+    pids_limit: 256
+    mem_limit: 512M
+    cpus: 0.5
+    networks: [internal]
+    environment:
+      - MYSQL_ROOT_PASSWORD=3Hb9y8GgAAqr9Tyav5kw7cWGfBnBpP
+      - MYSQL_DATABASE=cardsapp
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      interval: 10s
+      retries: 10
+
+  backend:
+    build: ../blitz-ad/services/otkritki/backend
+    restart: unless-stopped
+    pids_limit: 256
+    mem_limit: 256M
+    cpus: 0.25
+    networks: [internal]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - PORT=8083
+      - MYSQL_PASSWORD=3Hb9y8GgAAqr9Tyav5kw7cWGfBnBpP
+      - DBNAME=cardsapp
+
+  gateway:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    pids_limit: 128
+    mem_limit: 64M
+    depends_on:
+      - bouquets
+      - backend
+    networks:
+      internal:
+      adrange:
+        aliases:
+          - ${TEAM}
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
