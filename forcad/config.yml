@@ -1,0 +1,35 @@
+game:
+  mode: classic
+  round_time: 30
+  start_time: 2024-01-01 00:00:00
+  timezone: Asia/Ho_Chi_Minh
+
+  default_score: 2500
+  flag_lifetime: 5
+  game_hardness: 10.0
+  inflation: true
+
+tasks:
+  - checker: bouquets/checker.py
+    checker_timeout: 20
+    checker_type: hackerdom_pfr
+    gets: 1
+    puts: 1
+    places: 3
+    name: bouquets
+
+  - checker: otkritki/checker.py
+    checker_timeout: 20
+    checker_type: hackerdom_pfr
+    gets: 1
+    puts: 1
+    places: 3
+    name: otkritki
+
+teams:
+  - ip: team1
+    name: "Team 1"
+    highlighted: true
+
+  - ip: team2
+    name: "Team 2"

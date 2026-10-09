@@ -233,3 +233,6 @@ Sau khi đổi `config.yml`, chạy lại `control.py setup` rồi `control.py s
   `docker run --rm --network adrange curlimages/curl curl -s http://team1:5000/login`
 - **Checker lỗi (CHECKER ERROR màu xám)**: xem log `celery` để biết lỗi Python.
 - **Cổng 5000 bận trên macOS**: do AirPlay Receiver — tắt trong System Settings → General → AirDrop & Handoff, hoặc đổi cổng publish.
+- **Postgres báo `port 5432 already in use`**: máy đã có PostgreSQL cài sẵn. ForcAD không cần publish postgres ra host (các service gọi nội bộ qua `postgres:5432`), nên compose đã bỏ mapping cổng này.
+- **`control.py start` rất lâu / treo khi tải image**: mạng tới Docker Hub/ghcr có thể bị bóp. Kiểm tra bằng `docker pull hello-world`. Nếu dùng chế độ `--fast` mà treo ở `ghcr.io/.../forcad_base`, hãy bỏ `--fast` để build từ `python:3.11` (Docker Hub).
+- **Checker báo GET CHECK_FAILED / non-hexadecimal**: `checker_type` phải là `hackerdom_pfr` (không phải `hackerdom`) để ForcAD trả đúng `flag_id` private cho checker. Sửa trong `config.yml` rồi `control.py reset` + `start`.

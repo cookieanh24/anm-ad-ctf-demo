@@ -133,9 +133,9 @@ services:
       - ./docker_config/postgres_environment.env
     restart: on-failure
     command: "postgres --max-connections=200"
-    ports:
-      - "5432:5432"
-      - "6432:5432"
+    # host port mappings removed: internal services reach postgres via the
+    # docker network (service name `postgres:5432`); publishing 5432 on the
+    # host conflicts with a local PostgreSQL install on some machines.
 
 networks:
   default:
