@@ -8,6 +8,13 @@ Bộ demo Attack/Defense CTF chạy trên một máy bằng Docker, phục vụ 
 
 ## Bắt đầu nhanh
 
+**Cách nhanh nhất — một lệnh** (cần Docker Desktop đang chạy + Python 3):
+```bash
+./setup.sh
+```
+Sau đó mở http://localhost:8080. Muốn làm thủ công từng bước thì theo bên dưới.
+
+
 ```bash
 # 1) Bật dịch vụ cho 2 đội
 cd range && ./up.sh
